@@ -6,17 +6,33 @@ from planets import PLANETS, add_planet_orbits
 from orbit_calculations import compute_object_positions, add_object_orbits
 from plot_utils import setup_plot
 
-# --- Streamlit Setup ---
 st.set_page_config(page_title="Solar System Visualizer", layout="wide")
 st.title("🌌 3D Solar System Visualizer")
 st.markdown("Visualisierung von Planetenbahnen und Asteroiden/Kometenbahnen aus deiner CSV-Datei.")
 
+# --- CSV-Auswahl in der Sidebar ---
+st.sidebar.header("📂 Datenquelle")
+
+csv_file = st.sidebar.selectbox(
+    "Welche CSV soll verwendet werden?",
+    [
+        "sbdb_query_results.csv",
+        "clustering/clustered_families.csv",
+        "clustering/clustered_families_dbscan.csv",
+    ],
+    index=0,
+)
+
+# Welche Spalte enthält die Cluster?
+cluster_column = None
+if csv_file == "clustered_families.csv":
+    cluster_column = "cluster"
+elif csv_file == "clustered_families_dbscan.csv":
+    cluster_column = "dbscan_cluster"
+
 # --- Daten laden ---
-df = load_data("sbdb_query_results.csv")
+df = load_data(csv_file)
 df = prepare_dataframe(df)
-
-
-
 
 # --- Sidebar ---
 st.sidebar.header("🔍 Anzeigeoptionen")
@@ -66,9 +82,9 @@ st.sidebar.markdown(f"**Gesamt verfügbar:** {len(df):,}")
 # --- Plot aufbauen ---
 fig = setup_plot()
 add_planet_orbits(fig, PLANETS)
-compute_object_positions(fig, objs)
+compute_object_positions(fig, objs, cluster_column=cluster_column)
 if show_orbits:
-    add_object_orbits(fig, objs_orbits)
+    add_object_orbits(fig, objs_orbits, cluster_column=cluster_column)
 
 st.plotly_chart(fig, config={"responsive": True, "displayModeBar": True})
 
