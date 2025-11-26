@@ -1,3 +1,8 @@
 sbdb_query_results.csv
 .DS_Store
 clustering/allData.csv
+clustering/clustered_families_dbscan.csv
+clustering/clustered_families_kmeans.csv
+clustering/clustered_families_dbscan.csv
+clustering/clustered_families_dbscan_all.csv
+clustering/clustered_kometVsAsteroid_kmeans.csv
