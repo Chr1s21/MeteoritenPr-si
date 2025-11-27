@@ -19,7 +19,8 @@ csv_file = st.sidebar.selectbox(
         "sbdb_query_results.csv",
         "csvs/clustered_families_dbscan.csv",
         "csvs/clustered_families_kmeans.csv",
-        "csvs/clustered_kometVsAsteroid_kmeans.csv"
+        "csvs/clustered_kometVsAsteroid_kmeans.csv",
+        "csvs/komet_vs_asteroid_clusters_dbscan.csv"
     ],
     index=0,
 )
