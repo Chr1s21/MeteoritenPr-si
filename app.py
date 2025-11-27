@@ -17,18 +17,14 @@ csv_file = st.sidebar.selectbox(
     "Welche CSV soll verwendet werden?",
     [
         "sbdb_query_results.csv",
-        "clustering/clustered_families.csv",
-        "clustering/clustered_families_dbscan.csv",
+        "csvs/clustered_families_dbscan.csv",
+        "csvs/clustered_families_kmeans.csv",
+        "csvs/clustered_kometVsAsteroid_kmeans.csv"
     ],
     index=0,
 )
 
-# Welche Spalte enthält die Cluster?
-cluster_column = None
-if csv_file == "clustered_families.csv":
-    cluster_column = "cluster"
-elif csv_file == "clustered_families_dbscan.csv":
-    cluster_column = "dbscan_cluster"
+cluster_column = "cluster"
 
 # --- Daten laden ---
 df = load_data(csv_file)
