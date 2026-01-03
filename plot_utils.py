@@ -27,6 +27,6 @@ def setup_plot():
             itemwidth=30
         ),
         # Kamera senkrecht von oben auf die XY-Ebene
-        scene_camera=dict(eye=dict(x=0, y=0, z=1))
+        scene_camera=dict(eye=dict(x=0, y=0, z=0.5))
     )
     return fig

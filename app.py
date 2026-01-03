@@ -43,33 +43,12 @@ df = prepare_dataframe(df)
 st.sidebar.header("🔍 Anzeigeoptionen")
 show_orbits = st.sidebar.toggle("Asteroiden-/Kometenbahnen anzeigen", value=False)
 
-# --- NEUER FILTER: Extremer Winkel / Hohe Inklination (Feste Auswahl) ---
-
-INCLINATION_OPTIONS = {
-    "Alle Objekte (i ≥ 0°)": 0,
-    "Hohe Inklination (i ≥ 45°)": 45,
-    "Extrem/Retrograd (i ≥ 90°)": 90
-}
-
-selected_option_label = st.sidebar.selectbox(
-    "Filtern: Minimaler Neigungswinkel",
-    list(INCLINATION_OPTIONS.keys()),
-    index=0 # Setze den Standardwert auf 0° (Alle Objekte)
-)
-
-min_inclination = INCLINATION_OPTIONS[selected_option_label]
-
-# Führe den Filter durch
-if min_inclination > 0:
-    # Die Spalte 'i' (Inklination) muss in Grad vorliegen
-    df = df[df["i"] >= min_inclination]
-# --- ENDE NEUER FILTER ---
-
-
-only_tg422 = st.sidebar.toggle("Nur TG422 anzeigen", value=False)
-
-if only_tg422:
-    df = df[df["full_name"].str.contains("TG422", case=False, na=False)]
+# --- AUSREISSER ENTFERNEN: 2015 TG422 ---
+df = df[~df["full_name"].str.contains("TG422", case=False, na=False)]
+df = df[~df["full_name"].str.contains("BL76", case=False, na=False)]
+df = df[~df["full_name"].str.contains("SL102", case=False, na=False)]
+df = df[~df["full_name"].str.contains("VN112", case=False, na=False)]
+# --- ENDE FILTER ---
 
 
 # --- Level of Detail ---
@@ -111,8 +90,6 @@ else:
 
 # --- Sidebar-Infos ---
 st.sidebar.markdown(f"**Gefiltert:** {len(df):,}")
-st.sidebar.markdown(f"**Innere Objekte:** {len(inner_sample):,}")
-st.sidebar.markdown(f"**Äußere Objekte:** {len(outer_sample):,}")
 st.sidebar.markdown(f"**Aktuell gezeichnet:** {len(objs):,}")
 st.sidebar.markdown(f"**Gesamt verfügbar (ungf.):** {len(load_data(csv_file)):,}")
 
