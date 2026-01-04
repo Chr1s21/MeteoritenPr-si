@@ -1,8 +1,59 @@
 import streamlit as st
 import nbformat
+import subprocess
+from pathlib import Path
+import sys
 
 st.set_page_config(page_title="Notebook Viewer", layout="wide")
 st.title("📓 Notebook Viewer")
+
+st.sidebar.header("⚙️ Daten aktualisieren")
+
+NOTEBOOK_PATH = Path("clustering/kometVsAsteroid.ipynb")
+if st.sidebar.button("Notebook: Komet vs. Asteroid ausführen"):
+    with st.spinner("Notebook wird ausgeführt..."):
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "jupyter",
+                    "nbconvert",
+                    "--to",
+                    "notebook",
+                    "--execute",
+                    "--inplace",
+                    str(NOTEBOOK_PATH),
+                ],
+                check=True,
+            )
+            st.success("✅ Notebook erfolgreich ausgeführt")
+        except subprocess.CalledProcessError as e:
+            st.error("❌ Fehler beim Ausführen des Notebooks")
+            st.exception(e)
+
+NOTEBOOK_PATH = Path("clustering/asteroidFamilies.ipynb")
+if st.sidebar.button("Notebook: Asteroid Familien ausführen"):
+    with st.spinner("Notebook wird ausgeführt..."):
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "jupyter",
+                    "nbconvert",
+                    "--to",
+                    "notebook",
+                    "--execute",
+                    "--inplace",
+                    str(NOTEBOOK_PATH),
+                ],
+                check=True,
+            )
+            st.success("✅ Notebook erfolgreich ausgeführt")
+        except subprocess.CalledProcessError as e:
+            st.error("❌ Fehler beim Ausführen des Notebooks")
+            st.exception(e)
 
 # Notebook-Datei auswählen
 notebook_file = st.selectbox(
