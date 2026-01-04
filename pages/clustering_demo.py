@@ -11,40 +11,6 @@ st.title("🔬 Clustering-Analyse: Kometen vs. Asteroiden")
 # --- Tabs für verschiedene Analysen ---
 tab1, tab2, tab3 = st.tabs(["Komet vs. Asteroid", "Asteroidenfamilien", "Erklärung"])
 
-# --- Button zum Ausführen der Notebooks ---
-st.sidebar.header("⚙️ Daten aktualisieren")
-if st.sidebar.button("Notebook: Komet vs. Asteroid ausführen"):
-    try:
-        notebook_path = "clustering/kometVsAsteroid.ipynb"
-        st.sidebar.write(f"📘 Führe {notebook_path} aus...")
-        result = subprocess.run(
-            ["papermill", notebook_path, notebook_path], capture_output=True, text=True
-        )
-        if result.returncode == 0:
-            st.sidebar.success(f"✅ {notebook_path} erfolgreich ausgeführt!")
-        else:
-            st.sidebar.error(
-                f"❌ Fehler beim Ausführen von {notebook_path}: {result.stderr}"
-            )
-    except Exception as e:
-        st.sidebar.error(f"❌ Fehler: {str(e)}")
-
-if st.sidebar.button("Notebook: Asteroidenfamilien ausführen"):
-    try:
-        notebook_path = "clustering/asteroidFamilies.ipynb"
-        st.sidebar.write(f"📘 Führe {notebook_path} aus...")
-        result = subprocess.run(
-            ["papermill", notebook_path, notebook_path], capture_output=True, text=True
-        )
-        if result.returncode == 0:
-            st.sidebar.success(f"✅ {notebook_path} erfolgreich ausgeführt!")
-        else:
-            st.sidebar.error(
-                f"❌ Fehler beim Ausführen von {notebook_path}: {result.stderr}"
-            )
-    except Exception as e:
-        st.sidebar.error(f"❌ Fehler: {str(e)}")
-
 # --- Überprüfen, ob die erforderlichen Dateien vorhanden sind ---
 required_files = [
     "csv/clustered_kometVsAsteroid_kmeans.csv",
