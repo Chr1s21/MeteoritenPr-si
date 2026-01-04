@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import os
+import subprocess
+import time
 
 st.set_page_config(page_title="Clustering Analyse", layout="wide")
 st.title("🔬 Clustering-Analyse: Kometen vs. Asteroiden")
@@ -10,7 +11,41 @@ st.title("🔬 Clustering-Analyse: Kometen vs. Asteroiden")
 # --- Tabs für verschiedene Analysen ---
 tab1, tab2, tab3 = st.tabs(["Komet vs. Asteroid", "Asteroidenfamilien", "Erklärung"])
 
-# Überprüfen, ob die erforderlichen Dateien vorhanden sind
+# --- Button zum Ausführen der Notebooks ---
+st.sidebar.header("⚙️ Daten aktualisieren")
+if st.sidebar.button("Notebook: Komet vs. Asteroid ausführen"):
+    try:
+        notebook_path = "clustering/kometVsAsteroid.ipynb"
+        st.sidebar.write(f"📘 Führe {notebook_path} aus...")
+        result = subprocess.run(
+            ["papermill", notebook_path, notebook_path], capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            st.sidebar.success(f"✅ {notebook_path} erfolgreich ausgeführt!")
+        else:
+            st.sidebar.error(
+                f"❌ Fehler beim Ausführen von {notebook_path}: {result.stderr}"
+            )
+    except Exception as e:
+        st.sidebar.error(f"❌ Fehler: {str(e)}")
+
+if st.sidebar.button("Notebook: Asteroidenfamilien ausführen"):
+    try:
+        notebook_path = "clustering/asteroidFamilies.ipynb"
+        st.sidebar.write(f"📘 Führe {notebook_path} aus...")
+        result = subprocess.run(
+            ["papermill", notebook_path, notebook_path], capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            st.sidebar.success(f"✅ {notebook_path} erfolgreich ausgeführt!")
+        else:
+            st.sidebar.error(
+                f"❌ Fehler beim Ausführen von {notebook_path}: {result.stderr}"
+            )
+    except Exception as e:
+        st.sidebar.error(f"❌ Fehler: {str(e)}")
+
+# --- Überprüfen, ob die erforderlichen Dateien vorhanden sind ---
 required_files = [
     "csv/clustered_kometVsAsteroid_kmeans.csv",
     "csv/clustered_kometVsAsteroid_dbscan.csv",
@@ -30,30 +65,36 @@ with tab1:
     with col1:
         st.subheader("K-Means Clustering")
         try:
-            df_kmeans = pd.read_csv("csv/clustered_kometVsAsteroid_kmeans.csv")
-            # Sample für Performance
-            df_plot = (
-                df_kmeans[["t_jup", "i", "cluster"]]
-                .dropna()
-                .sample(n=min(20000, len(df_kmeans)), random_state=42)
-            )
+            with st.spinner("Lade K-Means-Daten..."):
+                progress = st.progress(0)
+                for i in range(100):
+                    time.sleep(0.02)  # Simuliert Ladezeit
+                    progress.progress(i + 1)
 
-            fig = px.scatter(
-                df_plot,
-                x="t_jup",
-                y="i",
-                color="cluster",
-                color_continuous_scale="RdBu",
-                title="K-Means: Komet vs. Asteroid",
-                labels={"t_jup": "Tisserand-Parameter", "i": "Inklination [°]"},
-            )
-            fig.add_vline(
-                x=3.0,
-                line_dash="dash",
-                line_color="black",
-                annotation_text="Kometen-Grenze T_J=3",
-            )
-            st.plotly_chart(fig, use_container_width=True)
+                df_kmeans = pd.read_csv("csv/clustered_kometVsAsteroid_kmeans.csv")
+                # Sample für Performance
+                df_plot = (
+                    df_kmeans[["t_jup", "i", "cluster"]]
+                    .dropna()
+                    .sample(n=min(20000, len(df_kmeans)), random_state=42)
+                )
+
+                fig = px.scatter(
+                    df_plot,
+                    x="t_jup",
+                    y="i",
+                    color="cluster",
+                    color_continuous_scale="RdBu",
+                    title="K-Means: Komet vs. Asteroid",
+                    labels={"t_jup": "Tisserand-Parameter", "i": "Inklination [°]"},
+                )
+                fig.add_vline(
+                    x=3.0,
+                    line_dash="dash",
+                    line_color="black",
+                    annotation_text="Kometen-Grenze T_J=3",
+                )
+                st.plotly_chart(fig, use_container_width=True)
         except FileNotFoundError:
             st.error(
                 "Datei nicht gefunden. Bitte führe zuerst das Clustering-Notebook aus."
@@ -62,24 +103,30 @@ with tab1:
     with col2:
         st.subheader("DBSCAN Clustering")
         try:
-            df_dbscan = pd.read_csv("csv/clustered_kometVsAsteroid_dbscan.csv")
-            df_plot = (
-                df_dbscan[["t_jup", "i", "cluster"]]
-                .dropna()
-                .sample(n=min(20000, len(df_dbscan)), random_state=42)
-            )
+            with st.spinner("Lade DBSCAN-Daten..."):
+                progress = st.progress(0)
+                for i in range(100):
+                    time.sleep(0.02)  # Simuliert Ladezeit
+                    progress.progress(i + 1)
 
-            fig = px.scatter(
-                df_plot,
-                x="t_jup",
-                y="i",
-                color="cluster",
-                color_continuous_scale="Viridis",
-                title="DBSCAN: Komet vs. Asteroid (Rauschen = -1)",
-                labels={"t_jup": "Tisserand-Parameter", "i": "Inklination [°]"},
-            )
-            fig.add_vline(x=3.0, line_dash="dash", line_color="red")
-            st.plotly_chart(fig, use_container_width=True)
+                df_dbscan = pd.read_csv("csv/clustered_kometVsAsteroid_dbscan.csv")
+                df_plot = (
+                    df_dbscan[["t_jup", "i", "cluster"]]
+                    .dropna()
+                    .sample(n=min(20000, len(df_dbscan)), random_state=42)
+                )
+
+                fig = px.scatter(
+                    df_plot,
+                    x="t_jup",
+                    y="i",
+                    color="cluster",
+                    color_continuous_scale="Viridis",
+                    title="DBSCAN: Komet vs. Asteroid (Rauschen = -1)",
+                    labels={"t_jup": "Tisserand-Parameter", "i": "Inklination [°]"},
+                )
+                fig.add_vline(x=3.0, line_dash="dash", line_color="red")
+                st.plotly_chart(fig, use_container_width=True)
         except FileNotFoundError:
             st.error("Datei nicht gefunden.")
 
@@ -90,25 +137,31 @@ with tab2:
     clustering_method = st.radio("Wähle die Clustering-Methode:", ("K-Means", "DBSCAN"))
 
     try:
-        if clustering_method == "K-Means":
-            df_families = pd.read_csv("csv/clustered_families_kmeans.csv")
-        else:
-            df_families = pd.read_csv("csv/clustered_families_dbscan.csv")
+        with st.spinner(f"Lade {clustering_method}-Daten..."):
+            progress = st.progress(0)
+            for i in range(100):
+                time.sleep(0.02)  # Simuliert Ladezeit
+                progress.progress(i + 1)
 
-        df_plot = df_families[["a", "i", "cluster"]].dropna()
-        df_plot = df_plot[(df_plot["a"] > 1.5) & (df_plot["a"] < 4.5)]
-        df_plot = df_plot.sample(n=min(50000, len(df_plot)), random_state=42)
+            if clustering_method == "K-Means":
+                df_families = pd.read_csv("csv/clustered_families_kmeans.csv")
+            else:
+                df_families = pd.read_csv("csv/clustered_families_dbscan.csv")
 
-        fig = px.scatter(
-            df_plot,
-            x="a",
-            y="i",
-            color="cluster",
-            color_continuous_scale="Spectral",
-            title=f"Asteroidenfamilien ({clustering_method})",
-            labels={"a": "Große Halbachse [AU]", "i": "Inklination [°]"},
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            df_plot = df_families[["a", "i", "cluster"]].dropna()
+            df_plot = df_plot[(df_plot["a"] > 1.5) & (df_plot["a"] < 4.5)]
+            df_plot = df_plot.sample(n=min(50000, len(df_plot)), random_state=42)
+
+            fig = px.scatter(
+                df_plot,
+                x="a",
+                y="i",
+                color="cluster",
+                color_continuous_scale="Spectral",
+                title=f"Asteroidenfamilien ({clustering_method})",
+                labels={"a": "Große Halbachse [AU]", "i": "Inklination [°]"},
+            )
+            st.plotly_chart(fig, use_container_width=True)
     except FileNotFoundError:
         st.error(
             "Datei nicht gefunden. Bitte führe zuerst das Clustering-Notebook aus."

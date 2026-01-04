@@ -6,18 +6,17 @@ from web.planets import PLANETS, add_planet_orbits
 from web.orbit_calculations import compute_object_positions, add_object_orbits
 from web.plot_utils import setup_plot
 
-# --- Streamlit Setup ---
 st.set_page_config(page_title="Solar System Visualizer", layout="wide")
 st.title("🌌 3D Solar System Visualizer")
 st.markdown("Visualisierung von Planetenbahnen und Asteroiden/Kometenbahnen aus deiner CSV-Datei.")
 
 # --- MAPPING: Anzeigename zu Dateipfad ---
 FILE_MAPPING = {
-    "1. Alle Objekte (Ungeclustert)": "sbdb_query_results.csv",
-    "2. Familien (DBSCAN Cluster)": "csvs/clustered_families_dbscan.csv",
-    "3. Familien (K-Means Cluster)": "csvs/clustered_families_kmeans.csv",
-    "4. Komet vs. Asteroid (K-Means)": "csvs/clustered_kometVsAsteroid_kmeans.csv",
-    "5. Komet vs. Asteroid (DBSCAN)": "csvs/clustered_kometVsAsteroid_dbscan.csv"
+    "1. Alle Objekte (Ungeclustert)": "./csv/raw_data.csv",
+    "2. Familien (DBSCAN Cluster)": "./csv/clustered_families_dbscan.csv",
+    "3. Familien (K-Means Cluster)": "./csv/clustered_families_kmeans.csv",
+    "4. Komet vs. Asteroid (K-Means)": "./csv/clustered_kometVsAsteroid_kmeans.csv",
+    "5. Komet vs. Asteroid (DBSCAN)": "./csv/clustered_kometVsAsteroid_dbscan.csv"
 }
 # --- ENDE MAPPING ---
 
@@ -37,21 +36,19 @@ csv_file = FILE_MAPPING[display_name]
 cluster_column = "cluster"
 
 # --- Daten laden ---
-df = load_data("./csv/raw_data.csv")
+df = load_data(csv_file)
 df = prepare_dataframe(df)
-
-
-
 
 # --- Sidebar ---
 st.sidebar.header("🔍 Anzeigeoptionen")
 show_orbits = st.sidebar.toggle("Asteroiden-/Kometenbahnen anzeigen", value=False)
 
-only_tg422 = st.sidebar.toggle("Nur TG422 anzeigen", value=False)
-
-if only_tg422:
-    df = df[df["full_name"].str.contains("TG422", case=False, na=False)]
-
+# --- AUSREISSER ENTFERNEN: 2015 TG422 ---
+df = df[~df["full_name"].str.contains("TG422", case=False, na=False)]
+df = df[~df["full_name"].str.contains("BL76", case=False, na=False)]
+df = df[~df["full_name"].str.contains("SL102", case=False, na=False)]
+df = df[~df["full_name"].str.contains("VN112", case=False, na=False)]
+# --- ENDE FILTER ---
 
 
 # --- Level of Detail ---
@@ -59,6 +56,7 @@ inner = df[df["a"] <= 5]
 outer = df[df["a"] > 5]
 
 # Gesamtlimit – wenn Bahnen aktiv, kleinere Menge für Performance
+# HINWEIS: Hier wurde MAX_TOTAL auf 10000/2000 belassen.
 MAX_TOTAL = 10000 if not show_orbits else 2000
 
 # 🎯 Exakte Zielwerte statt Verhältnis
@@ -72,8 +70,16 @@ target_outer = min(len(outer), TARGET_OUTER)
 
 
 # --- Stichproben ziehen ---
-inner_sample = inner.sample(n=target_inner, random_state=42)
-outer_sample = outer.sample(n=target_outer, random_state=42)
+if len(inner) > 0:
+    inner_sample = inner.sample(n=target_inner, random_state=42)
+else:
+    inner_sample = inner # leer
+    
+if len(outer) > 0:
+    outer_sample = outer.sample(n=target_outer, random_state=42)
+else:
+    outer_sample = outer # leer
+
 objs = pd.concat([inner_sample, outer_sample])
 
 # --- Bahnen nur für kleine Teilmenge (Performance) ---
@@ -83,17 +89,16 @@ else:
     objs_orbits = objs
 
 # --- Sidebar-Infos ---
-st.sidebar.markdown(f"**Innere Objekte:** {len(inner_sample):,}")
-st.sidebar.markdown(f"**Äußere Objekte:** {len(outer_sample):,}")
-st.sidebar.markdown(f"**Gesamt:** {len(objs):,}")
-st.sidebar.markdown(f"**Gesamt verfügbar:** {len(df):,}")
+st.sidebar.markdown(f"**Gefiltert:** {len(df):,}")
+st.sidebar.markdown(f"**Aktuell gezeichnet:** {len(objs):,}")
+st.sidebar.markdown(f"**Gesamt verfügbar (ungf.):** {len(load_data(csv_file)):,}")
+
 
 # --- Plot aufbauen ---
 fig = setup_plot()
 add_planet_orbits(fig, PLANETS)
-compute_object_positions(fig, objs)
+compute_object_positions(fig, objs, cluster_column=cluster_column)
 if show_orbits:
-    add_object_orbits(fig, objs_orbits)
+    add_object_orbits(fig, objs_orbits, cluster_column=cluster_column)
 
 st.plotly_chart(fig, config={"responsive": True, "displayModeBar": True})
-

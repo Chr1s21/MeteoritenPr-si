@@ -52,7 +52,8 @@ def add_planet_orbits(fig, planets):
 
         fig.add_trace(go.Scatter3d(
             x=X_orb, y=Y_orb, z=Z_orb,
-            mode="lines", line=dict(width=1), name=f"{name} Orbit"
+            mode="lines", line=dict(width=1), name=f"{name} Orbit",
+            showlegend=False
         ))
 
         # --- aktuelle Position ---
@@ -90,7 +91,8 @@ def add_planet_orbits(fig, planets):
             marker=dict(size=5),
             text=[name],
             textposition="top center",
-            name=name
+            name=name,
+            showlegend=False
         ))
 
     # --- Sonne ---
@@ -100,5 +102,6 @@ def add_planet_orbits(fig, planets):
         marker=dict(size=8, color="gold"),
         text=["Sun"],
         textposition="top center",
-        name="Sun"
+        name="Sun",
+        showlegend=False
     ))
