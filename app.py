@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from data_utils import load_data, prepare_dataframe
-from planets import PLANETS, add_planet_orbits
-from orbit_calculations import compute_object_positions, add_object_orbits
-from plot_utils import setup_plot
+from web.data_utils import load_data, prepare_dataframe
+from web.planets import PLANETS, add_planet_orbits
+from web.orbit_calculations import compute_object_positions, add_object_orbits
+from web.plot_utils import setup_plot
 
 # --- Streamlit Setup ---
 st.set_page_config(page_title="Solar System Visualizer", layout="wide")
