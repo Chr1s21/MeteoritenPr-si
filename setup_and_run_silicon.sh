@@ -40,6 +40,7 @@ source venv/bin/activate
 
 # 6. Abhängigkeiten installieren
 echo "📦 Installiere Abhängigkeiten..."
+pip install --only-binary=:all: pyarrow
 pip install -r requirements.txt
 
 # 7. Streamlit starten

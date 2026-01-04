@@ -17,7 +17,7 @@ with tab1:
     with col1:
         st.subheader("K-Means Clustering")
         try:
-            df_kmeans = pd.read_csv("csvs/clustered_kometVsAsteroid_kmeans.csv")
+            df_kmeans = pd.read_csv("../csv/clustered_kometVsAsteroid_kmeans.csv")
             # Sample für Performance
             df_plot = df_kmeans[['t_jup', 'i', 'cluster']].dropna().sample(
                 n=min(20000, len(df_kmeans)), random_state=42
@@ -58,7 +58,7 @@ with tab2:
     st.header("Asteroidenfamilien im Hauptgürtel")
     
     try:
-        df_families = pd.read_csv("csvs/clustered_families_dbscan.csv")
+        df_families = pd.read_csv("../csv/clustered_families_kmeans.csv")
         df_plot = df_families[['a', 'i', 'cluster']].dropna()
         df_plot = df_plot[(df_plot['a'] > 1.5) & (df_plot['a'] < 4.5)]
         df_plot = df_plot.sample(n=min(50000, len(df_plot)), random_state=42)

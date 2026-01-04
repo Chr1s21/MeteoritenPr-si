@@ -10,6 +10,12 @@ chmod +x setup_and_run.sh
 ./setup_and_run.sh
 ```
 
+### Apple Silicon (M1/M2/...)
+```bash
+chmod +x setup_and_run_silicon.sh
+./setup_and_run_silicon.sh
+```
+
 ### Windows
 ```
 setup_and_run.bat

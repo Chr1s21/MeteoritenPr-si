@@ -12,7 +12,7 @@ st.title("🌌 3D Solar System Visualizer")
 st.markdown("Visualisierung von Planetenbahnen und Asteroiden/Kometenbahnen aus deiner CSV-Datei.")
 
 # --- Daten laden ---
-df = load_data("sbdb_query_results.csv")
+df = load_data("./csv/raw_data.csv")
 df = prepare_dataframe(df)
 
 
