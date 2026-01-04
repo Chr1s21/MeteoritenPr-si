@@ -11,6 +11,31 @@ st.set_page_config(page_title="Solar System Visualizer", layout="wide")
 st.title("🌌 3D Solar System Visualizer")
 st.markdown("Visualisierung von Planetenbahnen und Asteroiden/Kometenbahnen aus deiner CSV-Datei.")
 
+# --- MAPPING: Anzeigename zu Dateipfad ---
+FILE_MAPPING = {
+    "1. Alle Objekte (Ungeclustert)": "sbdb_query_results.csv",
+    "2. Familien (DBSCAN Cluster)": "csvs/clustered_families_dbscan.csv",
+    "3. Familien (K-Means Cluster)": "csvs/clustered_families_kmeans.csv",
+    "4. Komet vs. Asteroid (K-Means)": "csvs/clustered_kometVsAsteroid_kmeans.csv",
+    "5. Komet vs. Asteroid (DBSCAN)": "csvs/clustered_kometVsAsteroid_dbscan.csv"
+}
+# --- ENDE MAPPING ---
+
+# --- CSV-Auswahl in der Sidebar ---
+st.sidebar.header("📂 Datenquelle")
+
+# Zeige nur die Anzeigenamen in der Selectbox
+display_name = st.sidebar.selectbox(
+    "Welche CSV soll verwendet werden?",
+    list(FILE_MAPPING.keys()), # Liste der Anzeigenamen
+    index=0,
+)
+
+# Verwende das Mapping, um den tatsächlichen Dateipfad zu erhalten
+csv_file = FILE_MAPPING[display_name]
+
+cluster_column = "cluster"
+
 # --- Daten laden ---
 df = load_data("./csv/raw_data.csv")
 df = prepare_dataframe(df)
