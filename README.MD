@@ -18,7 +18,7 @@ chmod +x setup_and_run_silicon.sh
 
 ### Windows
 ```
-setup_and_run.bat
+.\setup_and_run.bat
 ```
 
 ### Manuell

@@ -42,6 +42,11 @@ python -m pip install --upgrade pip
 REM Restliche Pakete
 pip install -r requirements.txt
 
+REM Optional: Zusätzliche Pakete installieren
+.\venv\Scripts\python.exe -m pip install nbconvert
+.\venv\Scripts\python.exe -m pip install ipykernel
+.\venv\Scripts\python.exe -m ipykernel install --user --name python3 --display-name "Python 3 (venv)"
+
 REM 6. Streamlit starten
 echo Starte Solar System Visualizer...
 streamlit run app.py
